@@ -38,4 +38,27 @@ class ProductModel
     {
         $this->Name = $Name;
     }
+
+    // Getter và Setter cho thuộc tính Description
+    public function getDescription()
+    {
+        return $this->Description;
+    }
+
+    public function setDescription($Description)
+    {
+        $this->Description = $Description;
+    }
+
+    // Getter và Setter cho thuộc tính Price
+    public function getPrice()
+    {
+        return $this->Price;
+    }
+
+    public function setPrice($Price)
+    {
+        $this->Price = $Price;
+    }
 }
+?>

@@ -14,6 +14,7 @@ $controllerName = isset($url[0]) && $url[0] != '' ? ucfirst($url[0]) . 'Controll
 $action = isset($url[1]) && $url[1] != '' ? $url[1] : 'index';
 
 // die ("controller=$controllerName - action=$action");
+git status
 
 // Kiểm tra xem controller và action có tồn tại không
 if (!file_exists('app/controllers/' . $controllerName . '.php')) {
