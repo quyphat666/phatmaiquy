@@ -2,22 +2,21 @@
 
 class ProductModel
 {
-    // Thuộc tính của lớp ProductModel
     private $ID;
     private $Name;
     private $Description;
     private $Price;
+    private $Image;
 
-    // Constructor để khởi tạo đối tượng ProductModel
-    public function __construct($ID, $Name, $Description, $Price)
+    public function __construct($ID, $Name, $Description, $Price, $Image = '')
     {
         $this->ID = $ID;
         $this->Name = $Name;
         $this->Description = $Description;
         $this->Price = $Price;
+        $this->Image = $Image;
     }
 
-    // Getter và Setter cho thuộc tính ID
     public function getID()
     {
         return $this->ID;
@@ -28,7 +27,6 @@ class ProductModel
         $this->ID = $ID;
     }
 
-    // Getter và Setter cho thuộc tính Name
     public function getName()
     {
         return $this->Name;
@@ -39,7 +37,6 @@ class ProductModel
         $this->Name = $Name;
     }
 
-    // Getter và Setter cho thuộc tính Description
     public function getDescription()
     {
         return $this->Description;
@@ -50,7 +47,6 @@ class ProductModel
         $this->Description = $Description;
     }
 
-    // Getter và Setter cho thuộc tính Price
     public function getPrice()
     {
         return $this->Price;
@@ -59,6 +55,16 @@ class ProductModel
     public function setPrice($Price)
     {
         $this->Price = $Price;
+    }
+
+    public function getImage()
+    {
+        return $this->Image;
+    }
+
+    public function setImage($Image)
+    {
+        $this->Image = $Image;
     }
 }
 ?>
