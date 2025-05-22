@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <title>Đăng nhập</title>
@@ -55,7 +54,6 @@
         }
     </style>
 </head>
-
 <body>
     <div class="login-box">
         <h2>Đăng nhập</h2>
@@ -68,7 +66,12 @@
             <input type="password" name="password" placeholder="Mật khẩu" required>
             <button type="submit">Đăng nhập</button>
         </form>
+
+        <div style="text-align: center; margin-top: 15px;">
+            <a href="/phatmaiquy/User/register" style="color: #2980b9; text-decoration: none;">
+                Bạn chưa có tài khoản? Đăng ký
+            </a>
+        </div>
     </div>
 </body>
-
 </html>

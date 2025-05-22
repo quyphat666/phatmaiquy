@@ -15,7 +15,7 @@ class UserController
                 $users = json_decode(file_get_contents('users.json'), true);
             }
 
-            if (isset($users[$username]) && $users[$username]['password'] === $password) {
+            if (isset($users[$username]) && password_verify($password, $users[$username]['password'])) {
                 $_SESSION['user'] = [
                     'username' => $username,
                     'role' => $users[$username]['role']
@@ -40,11 +40,14 @@ class UserController
             $username = $_POST['username'] ?? '';
             $password = $_POST['password'] ?? '';
             $confirm = $_POST['confirm'] ?? '';
+            $role = $_POST['role'] ?? 'user';
 
             if ($password !== $confirm) {
                 $error = 'Mật khẩu xác nhận không khớp.';
             } elseif (empty($username) || empty($password)) {
                 $error = 'Vui lòng nhập đầy đủ thông tin.';
+            } elseif (!in_array($role, ['admin', 'user'])) {
+                $error = 'Vai trò không hợp lệ.';
             } else {
                 $users = [];
                 if (file_exists('users.json')) {
@@ -55,8 +58,8 @@ class UserController
                     $error = 'Tên đăng nhập đã tồn tại.';
                 } else {
                     $users[$username] = [
-                        'password' => $password,
-                        'role' => 'user'
+                        'password' => password_hash($password, PASSWORD_DEFAULT),
+                        'role' => $role
                     ];
                     file_put_contents('users.json', json_encode($users, JSON_PRETTY_PRINT));
                     $success = 'Đăng ký thành công! Bạn có thể đăng nhập.';

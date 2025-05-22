@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <title>Đăng ký tài khoản</title>
@@ -29,7 +28,8 @@
         }
 
         input[type="text"],
-        input[type="password"] {
+        input[type="password"],
+        select {
             width: 100%;
             padding: 12px;
             margin-bottom: 15px;
@@ -71,7 +71,6 @@
         }
     </style>
 </head>
-
 <body>
     <div class="register-box">
         <h2>Đăng ký tài khoản</h2>
@@ -87,6 +86,12 @@
             <input type="text" name="username" placeholder="Tên đăng nhập" required>
             <input type="password" name="password" placeholder="Mật khẩu" required>
             <input type="password" name="confirm" placeholder="Nhập lại mật khẩu" required>
+
+            <select name="role" required>
+                <option value="user">Người dùng</option>
+                <option value="admin">Quản trị viên</option>
+            </select>
+
             <button type="submit">Đăng ký</button>
         </form>
 
@@ -95,5 +100,4 @@
         </div>
     </div>
 </body>
-
 </html>

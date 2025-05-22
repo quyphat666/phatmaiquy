@@ -2,5 +2,13 @@
     "QuyPhat": {
         "password": "12345",
         "role": "user"
+    },
+    "quyphat2121": {
+        "password": "12345",
+        "role": "user"
+    },
+    "Admin": {
+        "password": "$2y$10$8N2nHsw.5Qa60NC8jeCuyOnUexj48wC4ThklhAUjXvHWlKyRx8.Lu",
+        "role": "admin"
     }
 }
