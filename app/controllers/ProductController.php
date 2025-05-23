@@ -1,138 +1,116 @@
 <?php
-
-require_once 'app/models/ProductModel.php';
+// Require SessionHelper and other necessary files
+require_once('app/config/database.php');
+require_once('app/models/ProductModel.php');
+require_once('app/models/CategoryModel.php');
 
 class ProductController
 {
-    private $products = [];
+    private $productModel;
+    private $db;
 
     public function __construct()
     {
-        session_start();
-
-        if (!isset($_SESSION['user'])) {
-            header('Location: /phatmaiquy/User/login');
-            exit();
-        }
-
-        if (isset($_SESSION['products'])) {
-            $this->products = $_SESSION['products'];
-        }
+        $this->db = (new Database())->getConnection();
+        $this->productModel = new ProductModel($this->db);
     }
 
     public function index()
     {
-        $this->list();
+        $products = $this->productModel->getProducts();
+        include 'app/views/product/list.php';
     }
 
-    public function list()
+    public function show($id)
     {
-        $products = $this->products;
-        include 'app/views/product/list.php';
+        $product = $this->productModel->getProductById($id);
+        if ($product) {
+            include 'app/views/product/show.php';
+        } else {
+            echo "Không thấy sản phẩm.";
+        }
     }
 
     public function add()
     {
-        if ($_SESSION['user']['role'] !== 'admin') {
-            die('Bạn không có quyền thêm sản phẩm.');
-        }
-
-        $errors = [];
-
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $name = $_POST['name'];
-            $description = $_POST['description'];
-            $price = $_POST['price'];
-            $imagePath = '';
-
-            if (empty($name)) {
-                $errors[] = 'Tên sản phẩm là bắt buộc.';
-            } elseif (strlen($name) < 10 || strlen($name) > 100) {
-                $errors[] = 'Tên sản phẩm phải có từ 10 đến 100 ký tự.';
-            }
-
-            if (!is_numeric($price) || $price <= 0) {
-                $errors[] = 'Giá phải là một số dương lớn hơn 0.';
-            }
-
-            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = 'uploads/';
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0777, true);
-                }
-
-                $imageName = time() . '_' . basename($_FILES['image']['name']);
-                $targetFile = $uploadDir . $imageName;
-
-                if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
-                    $imagePath = $targetFile;
-                } else {
-                    $errors[] = 'Không thể upload ảnh.';
-                }
-            }
-
-            if (empty($errors)) {
-                $id = count($this->products) + 1;
-                $product = new ProductModel($id, $name, $description, $price, $imagePath);
-                $this->products[] = $product;
-                $_SESSION['products'] = $this->products;
-                header('Location: /phatmaiquy/Product/list');
-                exit();
-            }
-        }
-
-        include 'app/views/product/add.php';
+        $categories = (new CategoryModel($this->db))->getCategories();
+        include_once 'app/views/product/add.php';
     }
+
+    public function save()
+{
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $name = $_POST['name'] ?? '';
+        $description = $_POST['description'] ?? '';
+        $price = $_POST['price'] ?? '';
+        $category_id = $_POST['category_id'] ?? null;
+
+        // Xử lý ảnh upload
+        $image = '';
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            $imageName = basename($_FILES['image']['name']);
+            $targetPath = 'uploads/' . $imageName;
+
+            // đảm bảo thư mục uploads tồn tại
+            if (!is_dir('uploads')) {
+                mkdir('uploads', 0777, true);
+            }
+
+            move_uploaded_file($_FILES['image']['tmp_name'], $targetPath);
+            $image = $imageName;
+        }
+
+        // Gọi hàm thêm sản phẩm có thêm tham số image
+        $result = $this->productModel->addProduct($name, $description, $price, $category_id, $image);
+
+        if (is_array($result)) {
+            $errors = $result;
+            $categories = (new CategoryModel($this->db))->getCategories();
+            include 'app/views/product/add.php';
+        } else {
+            header('Location: /phatmaiquy/Product');
+        }
+    }
+}
 
     public function edit($id)
     {
-        if ($_SESSION['user']['role'] !== 'admin') {
-            die('Bạn không có quyền sửa sản phẩm.');
-        }
+        $product = $this->productModel->getProductById($id);
+        $categories = (new CategoryModel($this->db))->getCategories();
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            foreach ($this->products as $key => $product) {
-                if ($product->getID() == $id) {
-                    $this->products[$key]->setName($_POST['name']);
-                    $this->products[$key]->setDescription($_POST['description']);
-                    $this->products[$key]->setPrice($_POST['price']);
-                    break;
-                }
+        if ($product) {
+            include 'app/views/product/edit.php';
+        } else {
+            echo "Không thấy sản phẩm.";
+        }
+    }
+
+    public function update()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = $_POST['id'];
+            $name = $_POST['name'];
+            $description = $_POST['description'];
+            $price = $_POST['price'];
+            $category_id = $_POST['category_id'];
+
+            $edit = $this->productModel->updateProduct($id, $name, $description, $price, $category_id);
+
+            if ($edit) {
+                header('Location: /phatmaiquy/Product');
+            } else {
+                echo "Đã xảy ra lỗi khi lưu sản phẩm.";
             }
-
-            $_SESSION['products'] = $this->products;
-            header('Location: /phatmaiquy/Product/list');
-            exit();
         }
-
-        foreach ($this->products as $product) {
-            if ($product->getID() == $id) {
-                include 'app/views/product/edit.php';
-                return;
-            }
-        }
-
-        die('Product not found');
     }
 
     public function delete($id)
     {
-        if ($_SESSION['user']['role'] !== 'admin') {
-            die('Bạn không có quyền xóa sản phẩm.');
+        if ($this->productModel->deleteProduct($id)) {
+            header('Location: /phatmaiquy/Product');
+        } else {
+            echo "Đã xảy ra lỗi khi xóa sản phẩm.";
         }
-
-        foreach ($this->products as $key => $product) {
-            if ($product->getID() == $id) {
-                unset($this->products[$key]);
-                break;
-            }
-        }
-
-        $this->products = array_values($this->products);
-        $_SESSION['products'] = $this->products;
-
-        header('Location: /phatmaiquy/Product/list');
-        exit();
     }
 }
 ?>

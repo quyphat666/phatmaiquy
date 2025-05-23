@@ -81,10 +81,7 @@
 </head>
 
 <body>
-    <?php
-    
-    include 'app/views/partials/header.php';
-    ?>
+    <?php include 'app/views/shares/header.php'; ?>
 
     <h1>Danh sách sản phẩm</h1>
 
@@ -93,28 +90,30 @@
     </div>
 
     <ul>
-        <?php foreach ($products as $product): ?>
-            <li>
-                <?php
-                $image = method_exists($product, 'getImage') && $product->getImage()
-                    ? $product->getImage()
-                    : 'uploads/default.png';
-                ?>
-                <img class="product-image" src="/phatmaiquy/<?= htmlspecialchars($image, ENT_QUOTES, 'UTF-8'); ?>" alt="Ảnh sản phẩm">
+    <?php foreach ($products as $product): ?>
+    <li>
+        <?php
+        $imageFile = isset($product->image) && !empty($product->image)
+            ? $product->image
+            : 'default.png';
 
-                <h2><?= htmlspecialchars($product->getName(), ENT_QUOTES, 'UTF-8'); ?></h2>
+        $imagePath = "/phatmaiquy/uploads/" . htmlspecialchars($imageFile, ENT_QUOTES, 'UTF-8');
+        ?>
+        <img class="product-image" src="<?= $imagePath ?>" alt="Ảnh sản phẩm">
 
-                <p><?= htmlspecialchars($product->getDescription(), ENT_QUOTES, 'UTF-8'); ?></p>
+        <h2><?= htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8'); ?></h2>
 
-                <p><strong>Giá:</strong> <?= htmlspecialchars($product->getPrice(), ENT_QUOTES, 'UTF-8'); ?> VND</p>
+        <p><?= htmlspecialchars($product->description, ENT_QUOTES, 'UTF-8'); ?></p>
 
-                <div class="actions">
-                    <a class="edit" href="/phatmaiquy/Product/edit/<?= $product->getID(); ?>">Sửa</a>
-                    <a class="delete" href="/phatmaiquy/Product/delete/<?= $product->getID(); ?>"
-                        onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">Xóa</a>
-                </div>
-            </li>
-        <?php endforeach; ?>
+        <p><strong>Giá:</strong> <?= htmlspecialchars($product->price, ENT_QUOTES, 'UTF-8'); ?> VND</p>
+
+        <div class="actions">
+            <a class="edit" href="/phatmaiquy/Product/edit/<?= $product->id; ?>">Sửa</a>
+            <a class="delete" href="/phatmaiquy/Product/delete/<?= $product->id; ?>"
+               onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">Xóa</a>
+        </div>
+    </li>
+<?php endforeach; ?>
     </ul>
 </body>
 
