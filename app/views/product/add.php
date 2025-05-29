@@ -1,4 +1,14 @@
 <?php include 'app/views/shares/header.php'; ?>
+<?php
+include 'app/views/shares/header.php';
+
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+    echo "<div class='alert alert-danger text-center'>Bạn không có quyền truy cập trang này.</div>";
+    include 'app/views/shares/footer.php';
+    exit();
+}
+?>
+
 
 <h1>Thêm sản phẩm mới</h1>
 
@@ -40,6 +50,7 @@
             <?php endforeach; ?>
         </select>
     </div>
+    
 
     <!-- Thêm input chọn ảnh -->
     <div class="form-group">

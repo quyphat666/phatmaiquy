@@ -74,6 +74,7 @@
 <body>
     <div class="register-box">
         <h2>Đăng ký tài khoản</h2>
+
         <?php if (!empty($error)): ?>
             <div class="error"><?= htmlspecialchars($error); ?></div>
         <?php endif; ?>
@@ -84,6 +85,7 @@
 
         <form method="POST">
             <input type="text" name="username" placeholder="Tên đăng nhập" required>
+            <input type="text" name="fullname" placeholder="Họ và tên" required>
             <input type="password" name="password" placeholder="Mật khẩu" required>
             <input type="password" name="confirm" placeholder="Nhập lại mật khẩu" required>
 

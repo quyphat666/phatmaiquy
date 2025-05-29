@@ -1,8 +1,14 @@
 <?php
-class UserController
-{
-    public function login()
-    {
+require_once 'app/models/UserModel.php';
+
+class UserController {
+    private $userModel;
+
+    public function __construct() {
+        $this->userModel = new UserModel();
+    }
+
+    public function login() {
         session_start();
         $error = '';
 
@@ -10,17 +16,18 @@ class UserController
             $username = $_POST['username'] ?? '';
             $password = $_POST['password'] ?? '';
 
-            $users = [];
-            if (file_exists('users.json')) {
-                $users = json_decode(file_get_contents('users.json'), true);
-            }
+            $user = $this->userModel->findUser($username);
 
-            if (isset($users[$username]) && password_verify($password, $users[$username]['password'])) {
+            if ($user && password_verify($password, $user['password'])) {
                 $_SESSION['user'] = [
-                    'username' => $username,
-                    'role' => $users[$username]['role']
+                    'username' => $user['username'],
+                    'role' => $user['role']
                 ];
-                header('Location: /phatmaiquy/Product/list');
+
+                // ✅ Gọi trực tiếp ProductController để hiển thị danh sách
+                require_once 'app/controllers/ProductController.php';
+                $productController = new ProductController();
+                $productController->index(); // gọi hàm index (hiển thị list.php)
                 exit();
             } else {
                 $error = 'Tên đăng nhập hoặc mật khẩu không đúng';
@@ -30,11 +37,13 @@ class UserController
         include 'app/views/User/Login.php';
     }
 
-    public function register()
-    {
+    public function register() {
         session_start();
         $error = '';
         $success = '';
+        $fullname = $_POST['fullname'] ?? '';
+        
+
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = $_POST['username'] ?? '';
@@ -48,32 +57,23 @@ class UserController
                 $error = 'Vui lòng nhập đầy đủ thông tin.';
             } elseif (!in_array($role, ['admin', 'user'])) {
                 $error = 'Vai trò không hợp lệ.';
+            } elseif ($this->userModel->findUser($username)) {
+                $error = 'Tên đăng nhập đã tồn tại.';
             } else {
-                $users = [];
-                if (file_exists('users.json')) {
-                    $users = json_decode(file_get_contents('users.json'), true);
-                }
+                $this->userModel->createUser($username, $fullname, $password, $role);
 
-                if (isset($users[$username])) {
-                    $error = 'Tên đăng nhập đã tồn tại.';
-                } else {
-                    $users[$username] = [
-                        'password' => password_hash($password, PASSWORD_DEFAULT),
-                        'role' => $role
-                    ];
-                    file_put_contents('users.json', json_encode($users, JSON_PRETTY_PRINT));
-                    $success = 'Đăng ký thành công! Bạn có thể đăng nhập.';
-                }
+                $success = 'Đăng ký thành công! Bạn có thể đăng nhập.';
             }
         }
 
         include 'app/views/User/Register.php';
     }
 
-    public function logout()
-    {
+    public function logout() {
         session_start();
         session_destroy();
+
+        // Đưa về lại trang đăng nhập
         header('Location: /phatmaiquy/User/login');
         exit();
     }

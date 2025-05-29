@@ -14,6 +14,14 @@ class ProductController
         $this->db = (new Database())->getConnection();
         $this->productModel = new ProductModel($this->db);
     }
+    private function requireAdmin() {
+    session_start();
+    if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+        echo "<h3 style='color:red;text-align:center'>Bạn không có quyền truy cập chức năng này.</h3>";
+        exit();
+    }
+}
+
 
     public function index()
     {
