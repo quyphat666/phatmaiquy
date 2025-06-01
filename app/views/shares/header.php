@@ -28,6 +28,14 @@ if (session_status() === PHP_SESSION_NONE) {
                 <a class="nav-link" href="/phatmaiquy/Product/add">Thêm sản phẩm</a>
             </li>
         </ul>
+        <li class="nav-item">
+    <a class="nav-link" href="/phatmaiquy/Cart/view">🛒 Giỏ hàng
+        <?php if (!empty($_SESSION['cart'])): ?>
+            (<?= array_sum(array_column($_SESSION['cart'], 'quantity')) ?>)
+        <?php endif; ?>
+    </a>
+</li>
+
 
         <!-- Hiển thị tên người dùng và nút logout -->
         <ul class="navbar-nav">
