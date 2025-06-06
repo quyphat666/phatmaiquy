@@ -1,6 +1,6 @@
 <?php include 'app/views/shares/header.php'; ?>
 <?php
-include 'app/views/shares/header.php';
+
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
     echo "<div class='alert alert-danger text-center'>Bạn không có quyền sửa sản phẩm.</div>";

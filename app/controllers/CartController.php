@@ -38,6 +38,10 @@ class CartController {
     public function view() {
         include 'app/views/cart/view.php';
     }
+    public function index(){
+$this->view();
+
+    }
 
     public function remove($id) {
         if (isset($_SESSION['cart'][$id])) {

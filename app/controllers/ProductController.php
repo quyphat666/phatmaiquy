@@ -112,13 +112,20 @@ class ProductController
         }
     }
 
-    public function delete($id)
-    {
-        if ($this->productModel->deleteProduct($id)) {
-            header('Location: /phatmaiquy/Product');
-        } else {
-            echo "Đã xảy ra lỗi khi xóa sản phẩm.";
-        }
+
+public function delete($id)
+{
+    session_start();
+    if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+        echo "<h3 style='color:red; text-align:center'>Bạn không có quyền xóa sản phẩm.</h3>";
+        exit();
     }
+
+    if ($this->productModel->deleteProduct($id)) {
+        header('Location: /phatmaiquy/Product');
+    } else {
+        echo "Đã xảy ra lỗi khi xóa sản phẩm.";
+    }
+}
 }
 ?>

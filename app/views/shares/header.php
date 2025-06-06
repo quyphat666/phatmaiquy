@@ -1,61 +1,57 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+session_start();
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <title>Quản lý sản phẩm</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="/phatmaiquy/Product">Quản lý sản phẩm</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+<!-- Bootstrap 5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="/phatmaiquy/Product">Danh sách sản phẩm</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/phatmaiquy/Product/add">Thêm sản phẩm</a>
-            </li>
-        </ul>
-        <li class="nav-item">
-    <a class="nav-link" href="/phatmaiquy/Cart/view">🛒 Giỏ hàng
-        <?php if (!empty($_SESSION['cart'])): ?>
-            (<?= array_sum(array_column($_SESSION['cart'], 'quantity')) ?>)
-        <?php endif; ?>
-    </a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-danger px-4">
+<a class="navbar-brand fw-bold" href="/phatmaiquy/Product">🛍️ Cửa hàng</a>
+<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+<span class="navbar-toggler-icon"></span>
+</button>
+
+<div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+<!-- Menu trái -->
+<ul class="navbar-nav">
+<li class="nav-item">
+<a class="nav-link" href="/phatmaiquy/Product">Sản phẩm</a>
 </li>
+<?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin'): ?>
+<li class="nav-item">
+<a class="nav-link" href="/phatmaiquy/Product/add">Thêm sản phẩm</a>
+</li>
+<?php endif; ?>
+<li class="nav-item">
+<a class="nav-link" href="/phatmaiquy/Cart">🛒 Giỏ hàng</a>
+</li>
+</ul>
 
-
-        <!-- Hiển thị tên người dùng và nút logout -->
-        <ul class="navbar-nav">
-            <?php if (isset($_SESSION['user'])): ?>
-                <li class="nav-item">
-                    <span class="nav-link">👤 Xin chào, <strong><?= htmlspecialchars($_SESSION['user']['username']) ?></strong></span>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-danger" href="/phatmaiquy/User/logout">Đăng xuất</a>
-                </li>
-            <?php else: ?>
-                <li class="nav-item">
-                    <a class="nav-link" href="/phatmaiquy/User/login">Đăng nhập</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/phatmaiquy/User/register">Đăng ký</a>
-                </li>
-            <?php endif; ?>
-        </ul>
-    </div>
+<!-- Menu phải -->
+<ul class="navbar-nav">
+<?php if (isset($_SESSION['user'])): ?>
+<li class="nav-item me-2">
+<span class="navbar-text text-white">
+👤 Xin chào, <strong><?= htmlspecialchars($_SESSION['user']['username']) ?></strong>
+(<?= $_SESSION['user']['role'] ?>)
+</span>
+</li>
+<li class="nav-item">
+<a class="nav-link text-white" href="/phatmaiquy/User/logout">Đăng xuất</a>
+</li>
+<?php else: ?>
+<li class="nav-item">
+<a class="nav-link text-white" href="/phatmaiquy/User/login">Đăng nhập</a>
+</li>
+<li class="nav-item">
+<a class="nav-link text-white" href="/phatmaiquy/User/register">Đăng ký</a>
+</li>
+<?php endif; ?>
+</ul>
+</div>
 </nav>
 
-<div class="container mt-4">
+<!-- Bootstrap JS (để toggle menu hoạt động) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
