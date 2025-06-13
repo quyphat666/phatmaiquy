@@ -1,66 +1,82 @@
-<?php include 'app/views/shares/header.php'; ?>
-<?php
-include 'app/views/shares/header.php';
+<?php include __DIR__ . '/../views/shares/header.php'; ?>
 
-if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
-    echo "<div class='alert alert-danger text-center'>Bạn không có quyền truy cập trang này.</div>";
-    include 'app/views/shares/footer.php';
-    exit();
-}
-?>
+<h1>Thêm sản phẩm mới 🆕</h1>
 
+<form id="add-product-form" class="mt-4">
 
-<h1>Thêm sản phẩm mới</h1>
+<div class="form-group mb-3">
+<label for="name">Tên sản phẩm:</label>
+<input type="text" id="name" name="name" class="form-control" required>
+</div>
 
-<?php if (!empty($errors)): ?>
-    <div class="alert alert-danger">
-        <ul>
-            <?php foreach ($errors as $error): ?>
-                <li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
-            <?php endforeach; ?>
-        </ul>
-    </div>
-<?php endif; ?>
+<div class="form-group mb-3">
+<label for="description">Mô tả:</label>
+<textarea id="description" name="description" class="form-control" required></textarea>
+</div>
 
-<!-- Bổ sung enctype để form hỗ trợ upload ảnh -->
-<form method="POST" action="/phatmaiquy/Product/save" enctype="multipart/form-data" onsubmit="return validateForm();">
+<div class="form-group mb-3">
+<label for="price">Giá:</label>
+<input type="number" id="price" name="price" class="form-control" step="0.01" required>
+</div>
 
-    <div class="form-group">
-        <label for="name">Tên sản phẩm:</label>
-        <input type="text" id="name" name="name" class="form-control" required>
-    </div>
+<div class="form-group mb-3">
+<label for="category_id">Danh mục:</label>
+<select id="category_id" name="category_id" class="form-control" required>
+<!-- Danh mục sẽ được load từ API -->
+</select>
+</div>
 
-    <div class="form-group">
-        <label for="description">Mô tả:</label>
-        <textarea id="description" name="description" class="form-control" required></textarea>
-    </div>
-
-    <div class="form-group">
-        <label for="price">Giá:</label>
-        <input type="number" id="price" name="price" class="form-control" step="0.01" required>
-    </div>
-
-    <div class="form-group">
-        <label for="category_id">Danh mục:</label>
-        <select id="category_id" name="category_id" class="form-control" required>
-            <?php foreach ($categories as $category): ?>
-                <option value="<?php echo $category->id; ?>">
-                    <?php echo htmlspecialchars($category->name, ENT_QUOTES, 'UTF-8'); ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </div>
-    
-
-    <!-- Thêm input chọn ảnh -->
-    <div class="form-group">
-        <label for="image">Ảnh sản phẩm:</label>
-        <input type="file" id="image" name="image" class="form-control">
-    </div>
-
-    <button type="submit" class="btn btn-primary">Thêm sản phẩm</button>
+<button type="submit" class="btn btn-primary">Thêm sản phẩm</button>
+<a href="/phatmaiquy/Product" class="btn btn-secondary mt-2">Quay lại danh sách</a>
 </form>
 
-<a href="/phatmaiquy/Product" class="btn btn-secondary mt-2">Quay lại danh sách sản phẩm</a>
+<?php include __DIR__ . '/../views/shares/footer.php'; ?>
 
-<?php include 'app/views/shares/footer.php'; ?>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+// Load danh mục từ API
+fetch('/phatmaiquy/api/category')
+.then(res => res.json())
+.then(data => {
+const select = document.getElementById('category_id');
+data.forEach(cat => {
+const option = document.createElement('option');
+option.value = cat.id;
+option.textContent = cat.name;
+select.appendChild(option);
+});
+});
+
+// Bắt sự kiện submit
+document.getElementById('add-product-form').addEventListener('submit', function (event) {
+event.preventDefault();
+
+const formData = new FormData(this);
+const jsonData = {};
+formData.forEach((value, key) => {
+jsonData[key] = value;
+});
+
+fetch('/phatmaiquy/api/product', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify(jsonData)
+})
+.then(res => res.json())
+.then(data => {
+if (data.message === 'Product created successfully') {
+alert('✅ Thêm sản phẩm thành công!');
+window.location.href = '/phatmaiquy/Product';
+} else {
+alert('❌ Lỗi: ' + (data.errors?.name || data.message));
+}
+})
+.catch(err => {
+console.error(err);
+alert('❌ Có lỗi xảy ra khi gửi dữ liệu.');
+});
+});
+});
+</script>
